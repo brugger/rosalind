@@ -9,38 +9,46 @@ import sys
 import pprint
 pp = pprint.PrettyPrinter(indent=4)
 
-size = 3
+size = 7
 
 numbers = range( 1, size + 1)
 
 
+
+
 permuts = []
 
+def return_numbers( sub_perm ):
 
-
-def add_numbers( numbers ):
-    
-
-    number = numbers.pop(0)
-
-    print number
-
-
-    if len( numbers ) == 0:
-        return [[number]]
 
     res = []
-
-
-    for sub_permut in add_numbers( numbers ):
-        res.append( [number] + sub_permut )
     
+    
+    if ( len(sub_perm ) == 0):
+
+        for number in numbers:
+             res.append( [ number] )
+    
+        return res
+
+    else:
+
+        for sub in sub_perm:
+            for number in numbers:
+                if number in sub:
+                    continue
+                res.append(  [number] + sub )
+
+        return res
+
+        
 
 
+for i in numbers:
+    permuts = return_numbers( permuts )
 
-    pp.pprint( res )
-    return res
+print len( permuts )
 
-
-
-pp.pprint( add_numbers( numbers ))
+#pp.pprint(  permuts )
+for permut in sorted( permuts ):
+    print " ".join(map( str, permut))
