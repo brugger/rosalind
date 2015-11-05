@@ -21,6 +21,7 @@ def readin_fasta( fasta_file ):
     fasta_fh = open(fasta_file, 'r')
     for line in fasta_fh:
         line = line.strip("\n")
+        line = line.strip("\r")
 
         if ( re.match(">", line)):
             if ( name ):
@@ -56,8 +57,19 @@ def calc_gc( dna ):
 
 
 fastas = readin_fasta( sys.argv[1] )
-pp.pprint( fastas )
+#pp.pprint( fastas )
+
+
+largest_gc = 0
+largest_id = ""
 
 for fasta in  ( fastas ):
-    print fasta[ 0 ]
-    print "%.6f" % calc_gc( fasta[ 1 ])
+#    print fasta[ 0 ]
+    gc = calc_gc( fasta[ 1 ])
+
+    if ( gc > largest_gc ):
+        largest_gc = gc
+        largest_id = fasta[ 0]
+
+print "%s %.3f%%" % ( largest_id, largest_gc )
+
