@@ -10,10 +10,10 @@ import os
 import pprint
 pp = pprint.PrettyPrinter(indent=4)
 
-months = 85
-life   = 19
+months = 6
+life   = 3
 
-serie = [1, 1, ]
+serie = [1, 1 ]
 
 for m in range(2, months ):
 
