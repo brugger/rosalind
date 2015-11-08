@@ -11,8 +11,7 @@ import pprint
 pp = pprint.PrettyPrinter(indent=4)
 
 dna = "AGCCATGTAGCTAACTCAGGTTACATGGGGATGACCCCGCGACTTGGATTAGAGTCTCTTTTGGAATAAGCCTGAATGATCCGAGTAGCATCTCAG"
-dna = "AGCCATGTAGCTAACTCAGGTTACATGGGGATGACCCCGCGACTTGGATTAGAGTCTCTTTTGGAATAAGCCTGAATGATCCGAGTAGCATCTCAG"
-
+dna = "AGCCATGTAGCTAACTCAGGTTACATGGGGATGACCCCGCGACTTGGATTAGAGTCTCTTTTGGAATAAGCCTGAATGATCCGAGTAGCATCTC"
 codon2AA = { 
     "UUU" : "F", "CUU" : "L", "AUU" : "I", "GUU" : "V",
     "UUC" : "F", "CUC" : "L", "AUC" : "I", "GUC" : "V",
@@ -37,7 +36,8 @@ def rev_comp( dna ) :
     revbase = { 'A' : 'U', 
                 'C' : 'G', 
                 'G' : 'C',
-                'T' : 'A' }
+                'T' : 'A', 
+                'U' : 'A'}
 
     revdna = [""]*len(dna)
 
@@ -50,34 +50,47 @@ def rev_comp( dna ) :
     return "".join(revdna)
 
 
-print dna
+#print dna
+
+def find_orfs( DNA ):
 #dna = rev_comp( dna )
 #print dna
-dna = dna.replace("T", "U")
-AAs  = ""
-orf = 0
-for i in range(0, len(dna), 3):
+#dna = dna.replace("T", "U")
+    AAs  = ""
+    orf = 0
+#    print DNA
+    
+    for i in range(0, len(DNA), 3):
 
-    codon = dna[i: i+3]
-    if codon not in codon2AA:
-        next
-    else:
-        AA = codon2AA[ codon ]
+        codon = DNA[i: i+3]
+        if codon not in codon2AA:
+            next
+        else:
+            AA = codon2AA[ codon ]
+            
+#            print "%s - %s" % (codon, AA )
+            
+        if (AA == "M"):
+            orf = 1
+            AAs = AA
 
-    print "%s - %s" % (codon, AA )
+        elif ( AA == "*"):
+            if (len ( AAs ) > 0):
+                print AAs
 
-    if (AA == "M"):
-        orf = 1
-        AAs += AA
+            AAs = ""
+            orf = 0
 
-    if ( AA == "*"):
-        if (len ( AAs ) > 0):
-            print AAs
+        elif ( AAs != "" ):
+            AAs += AA
+        
 
-        AAs = ""
-        orf = 0
+dna = dna.replace('T', 'U')
 
-    if ( AAs != "" ):
-        AAs += AA
-
-
+for i in range( 0, 3):
+#    print i
+    find_orfs( dna[i:-1])
+dna = rev_comp( dna)
+for i in range( 0, 3):
+#    print i
+    find_orfs( dna[i:-1])
