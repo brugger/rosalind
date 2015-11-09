@@ -10,8 +10,15 @@ import os
 import pprint
 pp = pprint.PrettyPrinter(indent=4)
 
+import rosalind
+
+
 dna = "AGCCATGTAGCTAACTCAGGTTACATGGGGATGACCCCGCGACTTGGATTAGAGTCTCTTTTGGAATAAGCCTGAATGATCCGAGTAGCATCTCAG"
-dna = "AGCCATGTAGCTAACTCAGGTTACATGGGGATGACCCCGCGACTTGGATTAGAGTCTCTTTTGGAATAAGCCTGAATGATCCGAGTAGCATCTC"
+
+dna = "GAGTTTTTAAGTACAGGAATACCTTTTGAGTTCTCAGTTAGAGGATCCGTTAGTGATTGGGCTGACCTAATCGGTCGTATCGCCTCATTCAGTCAGACTTGCGAAACGGGGTGTACGTGATCTTGGTCTATATGTGTTAACACATTGCCATTCTTGCAGAGAGAAGGTGAATGGTTGGCGCCGGACAATGATCGGACGAGTGCTGTTGAGGTATAAGGTGCGCGGGTATCCCAAATTGGAAATTGGAAACGAAAATCCCGCCTCTTACACGAAAGATTACATTTTCGTGAGGTTCCCACGTTAGCAGGTTTGGGCCACCGCTTGCCTAAGTATTTAAACCCGGCGATATGCCGCTCACCGCAAGGTGTCTGGCGCTTGTCCTTCAGTTTGGGGTGAGCTTCTATTGGTGGGTCAAGATGATGACGTACGGGAGGTATTCTACAGGATCCGACCCAGGGAAGTCCCCATGGCTCCGATGGCAGCGCCCTAGCTAGGGCGCTGCCATCGGAGCCATTCCACTTGTCCAATGCGTAAGCCGCCAGTGGTACTAGCGTACGCTTCACTATAAATTAGGGGGTATTGAGAGCCGGGGGGTGCCAGGGGATCCATCCAGGTTGGTAGGCCGGTAAAAACAGCCGCCTCCTAGATCGTTACCGCGACGCTCCGCCCTCGCCCGGTCGCTTCCAACACGGTTTCCTCCGCCTGGTATCTAGACGGATTACCCCGAGAGTGTCAAATCGTAGGACAAAACCTAAGGCCCTGGCTGCAGAATGGCGGAGGAGGGCCGAGAGTCGTGGAATACCAGCCCAAAACAGATAAATCACGCGACCATAGTATATCGCACATACTCCGTACCGAATGAACTACCGACAGGTCATATCAAGCTATGTCCCTGGAGCATCCTTCCCAAGGGACAAATACTTGCCTGGTGGAGCTGCATTAGGAGTTTGTAAAAGCAAGTAGCGTCACTTGTAACGGCA"
+
+
+
 codon2AA = { 
     "UUU" : "F", "CUU" : "L", "AUU" : "I", "GUU" : "V",
     "UUC" : "F", "CUC" : "L", "AUC" : "I", "GUC" : "V",
@@ -31,66 +38,61 @@ codon2AA = {
     "UGG" : "W", "CGG" : "R", "AGG" : "R", "GGG" : "G" }
 
 
-def rev_comp( dna ) :
-
-    revbase = { 'A' : 'U', 
-                'C' : 'G', 
-                'G' : 'C',
-                'T' : 'A', 
-                'U' : 'A'}
-
-    revdna = [""]*len(dna)
-
-    dna_len = len( dna )
-
-    for i in range(0, len(dna)):                
-
-        revdna[ dna_len - i - 1] = revbase[ dna[ i ] ]
-
-    return "".join(revdna)
 
 
 #print dna
+
+def DNA2AA( DNA ):
+    
+    DNA = DNA.replace("T", "U")
+
+    AAs  = ""
+    for i in range(0, len(DNA), 3):
+        codon = DNA[i: i+3]
+        if ( codon in codon2AA ):
+            AAs += codon2AA[ codon ]
+        else:
+
+            AAs += "X"
+
+    return AAs
+
+
+
 
 def find_orfs( DNA ):
-#dna = rev_comp( dna )
-#print dna
-#dna = dna.replace("T", "U")
-    AAs  = ""
-    orf = 0
-#    print DNA
+    AAs  = DNA2AA( DNA )
+
+#    print AAs 
+
+    ORFs = []
+
+    for i in range(0, len(AAs)):
+        if ( AAs[ i ] != "M"):
+            continue
+
+        for j in range(i + 1, len(AAs)):
+            if ( AAs[ j ] == "*"):
+#                print "%d %d" %( i, j)
+                ORFs.append( "".join(AAs[i:j]))
+                break
+                              
+    return ORFs
     
-    for i in range(0, len(DNA), 3):
-
-        codon = DNA[i: i+3]
-        if codon not in codon2AA:
-            next
-        else:
-            AA = codon2AA[ codon ]
-            
-#            print "%s - %s" % (codon, AA )
-            
-        if (AA == "M"):
-            orf = 1
-            AAs = AA
-
-        elif ( AA == "*"):
-            if (len ( AAs ) > 0):
-                print AAs
-
-            AAs = ""
-            orf = 0
-
-        elif ( AAs != "" ):
-            AAs += AA
         
 
-dna = dna.replace('T', 'U')
+orfs = {}
+for i in range( 0, 3):
+#    print i
+    
+    for orf in find_orfs( dna[i:-1]):
+        orfs[ orf ] = 1
 
+dna = rosalind.rev_comp( dna)
 for i in range( 0, 3):
-#    print i
-    find_orfs( dna[i:-1])
-dna = rev_comp( dna)
-for i in range( 0, 3):
-#    print i
-    find_orfs( dna[i:-1])
+    for orf in find_orfs( dna[i:-1]):
+        orfs[ orf ] = 1
+
+#orfs = set( orfs)
+
+print "\n".join( orfs.keys() )
